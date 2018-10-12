@@ -36,7 +36,8 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern uint8_t UART2_TxBuffer[8];
+extern uint8_t UART2_RxBuffer[8];
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -151,7 +152,9 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
-
+	//This should keep receive interrupt alive after routine get called.
+	//Interupt every time UART2 receive 32 byte of data
+	HAL_UART_Receive_IT(&huart2, (uint8_t *)UART2_RxBuffer, sizeof(UART2_RxBuffer));
   /* USER CODE END USART2_IRQn 1 */
 }
 

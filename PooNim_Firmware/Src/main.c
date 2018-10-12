@@ -53,7 +53,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+CMD_HandlerTypeDef UART2_cmd;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,8 +73,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
+	uint8_t initialRxBuffer[32];
+  
+	/* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
 
@@ -111,7 +112,9 @@ int main(void)
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
-
+	printf("PooNim Firmware\n");
+	//Dummy receive data to get thing started
+	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, 24);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,7 +122,7 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-
+		SerialReceiveCMD();
   /* USER CODE BEGIN 3 */
 
   }
@@ -213,7 +216,15 @@ static void MX_NVIC_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void SerialReceiveCMD(void)
+{
+	
+}
 
+int fputc(int ch, FILE *f)
+{
+	return(ITM_SendChar(ch));
+}
 /* USER CODE END 4 */
 
 /**

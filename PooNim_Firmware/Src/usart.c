@@ -43,7 +43,8 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-
+uint8_t UART2_TxBuffer[8];
+uint8_t UART2_RxBuffer[8];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart2;
@@ -193,7 +194,42 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+/*
+*** Interrupt mode IO operation ***    
+	===================================
+	[..]    
+		(+) Send an amount of data in non blocking mode using HAL_UART_Transmit_IT() 
+		(+) At transmission end of transfer HAL_UART_TxCpltCallback is executed and user can 
+				 add his own code by customization of function pointer HAL_UART_TxCpltCallback
+		(+) Receive an amount of data in non blocking mode using HAL_UART_Receive_IT() 
+		(+) At reception end of transfer HAL_UART_RxCpltCallback is executed and user can 
+				 add his own code by customization of function pointer HAL_UART_RxCpltCallback
+		(+) In case of transfer Error, HAL_UART_ErrorCallback() function is executed and user can 
+				 add his own code by customization of function pointer HAL_UART_ErrorCallback
+*/
+//@brief  Rx Transfer completed callbacks.
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	for(int i =0; i < sizeof(UART2_RxBuffer); i++)
+	{
+		printf("%x\t", UART2_RxBuffer[i]);
+		//circ_bbuf_push(&UART2_CBuff, UART2_RxBuffer[i]);
+	}
+	if(UART2_RxBuffer[0] == 0x5B && UART2_RxBuffer[1] == 0x61){
+		printf(" : %x\t%i\t%x\t%x\t%x", UART2_RxBuffer[2], (int8_t)(UART2_RxBuffer[3]), UART2_RxBuffer[4],
+			UART2_RxBuffer[5],UART2_RxBuffer[6]);
+	}else{
+		printf("Frame error!");
+	}
+	
+	printf("\n");
+}
 
+//@brief  Tx Transfer completed callbacks.
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+
+}
 /* USER CODE END 1 */
 
 /**
