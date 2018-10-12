@@ -45,6 +45,7 @@
 /* USER CODE BEGIN 0 */
 uint8_t UART2_TxBuffer[8];
 uint8_t UART2_RxBuffer[8];
+CMD_HandlerTypeDef UART2_CMD;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart2;
@@ -210,19 +211,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 //@brief  Rx Transfer completed callbacks.
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	for(int i =0; i < sizeof(UART2_RxBuffer); i++)
-	{
-		printf("%x\t", UART2_RxBuffer[i]);
-		//circ_bbuf_push(&UART2_CBuff, UART2_RxBuffer[i]);
-	}
-	if(UART2_RxBuffer[0] == 0x5B && UART2_RxBuffer[1] == 0x61){
-		printf(" : %x\t%i\t%x\t%x\t%x", UART2_RxBuffer[2], (int8_t)(UART2_RxBuffer[3]), UART2_RxBuffer[4],
-			UART2_RxBuffer[5],UART2_RxBuffer[6]);
-	}else{
-		printf("Frame error!");
-	}
-	
-	printf("\n");
+	UART2_CMD = SerialReceiveCMD();
 }
 
 //@brief  Tx Transfer completed callbacks.
@@ -230,6 +219,31 @@ void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
 
 }
+
+CMD_HandlerTypeDef SerialReceiveCMD(void)
+{
+	CMD_HandlerTypeDef recv_cmd;
+	
+	//Check Head and Tail
+	if(UART2_RxBuffer[0] == 0x5B && UART2_RxBuffer[7] == 0x5D){
+		//Head and Tail
+		recv_cmd.head = UART2_RxBuffer[0];
+		recv_cmd.tail = UART2_RxBuffer[7];
+		//Command ID
+		recv_cmd.cmd_id = UART2_RxBuffer[1];
+		//Data package
+		recv_cmd.data[0] = UART2_RxBuffer[2];
+		recv_cmd.data[1] = UART2_RxBuffer[3];
+		recv_cmd.data[2] = UART2_RxBuffer[4];
+		recv_cmd.data[3] = UART2_RxBuffer[5];
+		recv_cmd.data[4] = UART2_RxBuffer[6];
+	}else{
+		printf("Frame error!\n");
+	}
+	
+	return recv_cmd;
+}
+
 /* USER CODE END 1 */
 
 /**

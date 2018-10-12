@@ -73,7 +73,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	uint8_t initialRxBuffer[32];
+	uint8_t initialRxBuffer[8];
   
 	/* USER CODE END 1 */
 
@@ -113,8 +113,9 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 	printf("PooNim Firmware\n");
+	printf("%i\n", INT8_MAX);
 	//Dummy receive data to get thing started
-	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, 24);
+	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer));
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,12 +123,14 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-		SerialReceiveCMD();
+		if(UART2_CMD.cmd_id == 0x31)
+		{
+			printf("Data: %i\n", (int8_t)(UART2_CMD.data[0]));
+		}
+	}
   /* USER CODE BEGIN 3 */
 
-  }
   /* USER CODE END 3 */
-
 }
 
 /** System Clock Configuration
@@ -216,11 +219,6 @@ static void MX_NVIC_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void SerialReceiveCMD(void)
-{
-	
-}
-
 int fputc(int ch, FILE *f)
 {
 	return(ITM_SendChar(ch));

@@ -170,14 +170,7 @@
 #define MEMS_INT2_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
-typedef struct {
-	uint8_t open_pack;	//0x5B -> "["
-	uint8_t header;			//0x61 -> "a"
-	uint8_t cmd_id;		//0x31 -> "1"
-	uint8_t data[4];
-}CMD_HandlerTypeDef;
 
-void SerialReceiveCMD(void);
 /* USER CODE END Private defines */
 
 void _Error_Handler(char *, int);

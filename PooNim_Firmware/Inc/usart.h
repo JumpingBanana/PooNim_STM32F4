@@ -55,8 +55,17 @@ extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 	 
 /* USER CODE BEGIN Private defines */
+typedef struct {
+	//Total 8 byte of package
+	uint8_t head;			//0x5B -> "["
+	uint8_t cmd_id;		//eg.0x31 -> "1", eg.0x32 -> "2"
+	uint8_t data[5];	//data package
+	uint8_t tail;			//0x5D -> "]"
+}CMD_HandlerTypeDef;
+
+CMD_HandlerTypeDef SerialReceiveCMD(void);
+extern CMD_HandlerTypeDef UART2_CMD;
 extern uint8_t UART2_TxBuffer[8];
-extern uint8_t UART2_RxBuffer[8];
 /* USER CODE END Private defines */
 
 extern void _Error_Handler(char *, int);
