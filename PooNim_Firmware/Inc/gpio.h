@@ -49,11 +49,29 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
+typedef struct 
+{
+	int ID;															//ID of the button
+	uint16_t LEDPin;										//Pin of the LED
+	GPIO_TypeDef* LEDPort;							//Port of the LED
+	
+	uint16_t PressedCount;
+	bool ButtonState;										//State of the button
+	bool LEDState;											//State of the LED
+}BUTTON_HandlerTypeDef;
 
+extern BUTTON_HandlerTypeDef button_R;
+extern BUTTON_HandlerTypeDef button_G;
+extern BUTTON_HandlerTypeDef button_B;
+extern BUTTON_HandlerTypeDef button_O;
+
+void ButtonInit(BUTTON_HandlerTypeDef* button, int ID);
+void ButtonLED_set(BUTTON_HandlerTypeDef* button);
+void ButtonLED_reset(BUTTON_HandlerTypeDef* button);
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);

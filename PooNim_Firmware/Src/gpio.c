@@ -40,7 +40,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 /* USER CODE BEGIN 0 */
-
+BUTTON_HandlerTypeDef button_R;
+BUTTON_HandlerTypeDef button_G;
+BUTTON_HandlerTypeDef button_B;
+BUTTON_HandlerTypeDef button_O;
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -238,7 +241,59 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+void ButtonInit(BUTTON_HandlerTypeDef* button, int ID){
+	button->ID = ID;
+	switch(ID){
+		case 1:	//Red
+			button->LEDPin = LED_R_Pin;
+			button->LEDPort = LED_R_GPIO_Port;
+			button->PressedCount = 0;
+			button->ButtonState = false;
+			button->LEDState = false;
+			break; //case 1
+		
+		case 2: //Green
+			button->LEDPin = LED_G_Pin;
+			button->LEDPort = LED_G_GPIO_Port;
+			button->PressedCount = 0;
+			button->ButtonState = false;
+			button->LEDState = false;
+			break; //case 2
+		
+		case 3: //Blue
+			button->LEDPin = LED_B_Pin;
+			button->LEDPort = LED_B_GPIO_Port;
+			button->PressedCount = 0;
+			button->ButtonState = false;
+			button->LEDState = false;
+			break; //case 3
+		
+		case 4: //Orange
+			button->LEDPin = LED_O_Pin;
+			button->LEDPort = LED_O_GPIO_Port;
+			button->PressedCount = 0;
+			button->ButtonState = false;
+			button->LEDState = false;
+			break; //case 4
+	}
+}
 
+/**
+	*	@note		Somehow switch case doesn't handle well? Error duplicated case
+	*	@param 	button: can be	button_R	for Red LED button
+	*													button_G for Green LED button
+	*													button_B for Blue LED button
+	*													button_O for Orange LED button
+	*/
+void ButtonLED_set(BUTTON_HandlerTypeDef* button){
+	HAL_GPIO_WritePin(button->LEDPort, button->LEDPin, GPIO_PIN_SET);
+	button->LEDState = true;
+}
+
+void ButtonLED_reset(BUTTON_HandlerTypeDef* button){
+	HAL_GPIO_WritePin(button->LEDPort, button->LEDPin, GPIO_PIN_RESET);
+	button->LEDState = false;
+}
 /* USER CODE END 2 */
 
 /**

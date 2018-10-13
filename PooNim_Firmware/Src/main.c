@@ -119,8 +119,13 @@ int main(void)
 	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); //Dummy receive data to get thing started
 	//Start Timer5 interrupt
 	HAL_TIM_Base_Start_IT(&htim5);	//20Hz interrupt
-	//Init motors
+	//Init Motors
 	InitMotors();
+	//Init Buttons & LEDs
+	InitButtons();
+	
+	//Some Hardware check
+	SystemCheck();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -226,6 +231,9 @@ static void MX_NVIC_Init(void)
 /* USER CODE BEGIN 4 */
 void InitMotors(void)
 {
+	//	Start required components for motors
+	//	eg. Timer for PWM, Timer for Encoder
+	
 	//Start TIM9 for PWM1 and PWM2, 5kHz
 	HAL_TIM_Base_Start(&htim9);
 	HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);	//PWM1
@@ -252,6 +260,7 @@ void InitMotors(void)
 	HAL_TIM_Encoder_Start(&htim4,TIM_CHANNEL_ALL);	//Start Timer4 to count encoder pulses
 	__HAL_TIM_SetCounter(&htim4, 0);	//Set count to 0
 	
+	//Initialize motors
 	MotorInit(&motor1, 1);
 	MotorInit(&motor2, 2);
 	MotorInit(&motor3, 3);
@@ -263,11 +272,97 @@ void InitMotors(void)
 	MotorSet_speed(&motor3, 0.0);
 	MotorSet_speed(&motor4, 0.0);
 	
-	//Reset Encoder
+	//Reset Encoder count
 	motor1.Encoder_feedback = 0;
 	motor2.Encoder_feedback = 0;
 	motor3.Encoder_feedback = 0;
 	motor4.Encoder_feedback = 0;
+}
+
+
+void InitButtons(void)
+{
+	ButtonInit(&button_R, 1);
+	ButtonInit(&button_G, 2);
+	ButtonInit(&button_B, 3);
+	ButtonInit(&button_O, 4);
+}
+
+void SystemCheck(void)
+{
+	//To do:
+	//- Make it smarter, check encoder value when motor moving
+	//- Check PID control instead of just set open-loop speed
+	//- Test UART Transmit and Receive as well
+	//- Make this check optional, by button press
+	
+	//Check Motors & LEDs
+	MotorSet_speed(&motor1, 0.2);
+	ButtonLED_set(&button_G);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor2, 0.2);
+	ButtonLED_set(&button_B);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor3, 0.2);
+	ButtonLED_set(&button_R);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor4, 0.2);
+	ButtonLED_set(&button_O);
+	HAL_Delay(1000);
+	
+	//Stop motor
+	MotorSet_speed(&motor1, 0.0);
+	ButtonLED_reset(&button_G);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor2, 0.0);
+	ButtonLED_reset(&button_B);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor3, 0.0);
+	ButtonLED_reset(&button_R);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor4, 0.0);
+	ButtonLED_reset(&button_O);
+	HAL_Delay(1000);
+	
+	//Turn another way
+	MotorSet_speed(&motor1, -0.2);
+	ButtonLED_set(&button_G);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor2, -0.2);
+	ButtonLED_set(&button_B);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor3, -0.2);
+	ButtonLED_set(&button_R);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor4, -0.2);
+	ButtonLED_set(&button_O);
+	HAL_Delay(1000);
+	
+	//Stop motor
+	MotorSet_speed(&motor1, 0.0);
+	ButtonLED_reset(&button_G);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor2, 0.0);
+	ButtonLED_reset(&button_B);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor3, 0.0);
+	ButtonLED_reset(&button_R);
+	HAL_Delay(1000);
+	
+	MotorSet_speed(&motor4, 0.0);
+	ButtonLED_reset(&button_O);
+	HAL_Delay(1000);
 }
 
 int fputc(int ch, FILE *f)

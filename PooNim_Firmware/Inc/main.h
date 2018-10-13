@@ -171,6 +171,8 @@
 
 /* USER CODE BEGIN Private defines */
 void InitMotors(void);
+void InitButtons(void);
+void SystemCheck(void);
 /* USER CODE END Private defines */
 
 void _Error_Handler(char *, int);

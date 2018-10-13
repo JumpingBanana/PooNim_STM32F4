@@ -40,4 +40,5 @@ poonim_firmware\main.o: ../Inc/tim.h
 poonim_firmware\main.o: ../Inc/usart.h
 poonim_firmware\main.o: ../Inc/circular-byte-buffer.h
 poonim_firmware\main.o: ../Inc/gpio.h
+poonim_firmware\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 poonim_firmware\main.o: ../Inc/motor.h
