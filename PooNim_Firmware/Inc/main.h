@@ -170,7 +170,7 @@
 #define MEMS_INT2_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
-
+void InitMotors(void);
 /* USER CODE END Private defines */
 
 void _Error_Handler(char *, int);

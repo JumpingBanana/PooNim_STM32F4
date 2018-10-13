@@ -46,7 +46,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "motor.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -117,9 +117,10 @@ int main(void)
 	
 	//Start UART2 receive in non-blocking mode
 	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); //Dummy receive data to get thing started
-	HAL_TIM_Base_Start_IT(&htim5);	//10Hz interrupt
 	//Start Timer5 interrupt
-	
+	HAL_TIM_Base_Start_IT(&htim5);	//20Hz interrupt
+	//Init motors
+	InitMotors();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -223,6 +224,52 @@ static void MX_NVIC_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void InitMotors(void)
+{
+	//Start TIM9 for PWM1 and PWM2, 5kHz
+	HAL_TIM_Base_Start(&htim9);
+	HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);	//PWM1
+	HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_2);	//PWM2
+	
+	//Start TIM12 for PWM3 and PWM4 generation, 5kHz
+	HAL_TIM_Base_Start(&htim12);
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);	//PWM3
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);	//PWM4
+	
+	//Start TIM1 for Encoder1 interface
+	HAL_TIM_Encoder_Start(&htim1,TIM_CHANNEL_ALL);	//Start Timer1 to count encoder pulses
+	__HAL_TIM_SetCounter(&htim1, 0);	//Set count to 0
+	
+	//Start TIM2 for Encoder2 interface
+	HAL_TIM_Encoder_Start(&htim2,TIM_CHANNEL_ALL);	//Start Timer2 to count encoder pulses
+	__HAL_TIM_SetCounter(&htim2, 0);	//Set count to 0
+	
+	//Start TIM3 for Encoder3 interface
+	HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_ALL);	//Start Timer3 to count encoder pulses
+	__HAL_TIM_SetCounter(&htim3, 0);	//Set count to 0
+
+	//Start TIM4 for Encoder4 interface
+	HAL_TIM_Encoder_Start(&htim4,TIM_CHANNEL_ALL);	//Start Timer4 to count encoder pulses
+	__HAL_TIM_SetCounter(&htim4, 0);	//Set count to 0
+	
+	MotorInit(&motor1, 1);
+	MotorInit(&motor2, 2);
+	MotorInit(&motor3, 3);
+	MotorInit(&motor4, 4);
+	
+	//Set motor speed to zero
+	MotorSet_speed(&motor1, 0.0);
+	MotorSet_speed(&motor2, 0.0);
+	MotorSet_speed(&motor3, 0.0);
+	MotorSet_speed(&motor4, 0.0);
+	
+	//Reset Encoder
+	motor1.Encoder_feedback = 0;
+	motor2.Encoder_feedback = 0;
+	motor3.Encoder_feedback = 0;
+	motor4.Encoder_feedback = 0;
+}
+
 int fputc(int ch, FILE *f)
 {
 	return(ITM_SendChar(ch));

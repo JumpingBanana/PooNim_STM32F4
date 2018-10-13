@@ -9,6 +9,7 @@
 "poonim_firmware\usart.o"
 "poonim_firmware\stm32f4xx_it.o"
 "poonim_firmware\stm32f4xx_hal_msp.o"
+"poonim_firmware\motor.o"
 "poonim_firmware\stm32f4xx_hal_adc.o"
 "poonim_firmware\stm32f4xx_hal_adc_ex.o"
 "poonim_firmware\stm32f4xx_hal_spi.o"
