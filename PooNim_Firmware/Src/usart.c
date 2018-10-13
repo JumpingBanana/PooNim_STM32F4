@@ -212,6 +212,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	UART2_CMD = SerialReceiveCMD();
+	
 }
 
 //@brief  Tx Transfer completed callbacks.

@@ -396,11 +396,6 @@
               <FilePath>..\Src\motor.c</FilePath>
             </File>
             <File>
-              <FileName>motor.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Inc\motor.h</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/main.c</FilePath>
@@ -444,6 +439,16 @@
               <FileName>stm32f4xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/stm32f4xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>robot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\robot.c</FilePath>
+            </File>
+            <File>
+              <FileName>robot.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Inc\robot.h</FilePath>
             </File>
           </Files>
         </Group>

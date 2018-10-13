@@ -183,6 +183,7 @@
 void InitMotors(void);
 void InitButtons(void);
 void SystemCheck(void);
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

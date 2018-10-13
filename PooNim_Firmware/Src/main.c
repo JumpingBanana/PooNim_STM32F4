@@ -48,13 +48,14 @@
 
 /* USER CODE BEGIN Includes */
 #include "motor.h"
+#include "robot.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-CMD_HandlerTypeDef UART2_cmd;
+//CMD_HandlerTypeDef UART2_cmd;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -117,7 +118,6 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 	printf("PooNim Firmware\n");
-	printf("%i\n", INT8_MAX);
 	
 	//Start UART2 receive in non-blocking mode
 	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); //Dummy receive data to get thing started
@@ -127,16 +127,45 @@ int main(void)
 	InitMotors();
 	//Init Buttons & LEDs
 	InitButtons();
-	
 	//Some Hardware check
-	SystemCheck();
+	//SystemCheck();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		switch(UART2_CMD.cmd_id) {
+			case 0x31:
+				//Set PooNim speed
+				//convert received uint8_t to float -> (float)(((int8_t)(UART2_CMD.data[0])*1.0f)/INT8_MAX)
+				PooNim_CMD.vel_x = (float)(((int8_t)(UART2_CMD.data[0])*1.0f)/INT8_MAX);
+				PooNim_CMD.vel_y = (float)(((int8_t)(UART2_CMD.data[1])*1.0f)/INT8_MAX);
+				PooNim_CMD.rot_w = (float)(((int8_t)(UART2_CMD.data[2])*1.0f)/INT8_MAX);
+			
+				float wheel_speed[4];
+				Robot_CalWheelSpeed(&PooNim_CMD, wheel_speed);
+				printf("speed cmd:: (%.3f, %.3f, %.3f) | Wheel speed:: (%.3f, %.3f, %.3f, %.3f)\n", 
+					PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w, wheel_speed[0], wheel_speed[1], wheel_speed[2], wheel_speed[3]);
+					
+				MotorSet_speed(&motor1, wheel_speed[0]);
+				MotorSet_speed(&motor2, wheel_speed[1]);
+				MotorSet_speed(&motor3, wheel_speed[2]);
+				MotorSet_speed(&motor4, wheel_speed[3]);
+			
+				break;
+			
+			case 0x32:
+				//Do something
+				break;
+			
+			default:
+				//What to do? Print out message for now.
+				printf("Unknown command ID, recieved: %x\n", UART2_CMD.cmd_id);
+		}
 		
+		//printf("Encoder:\t%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
+		HAL_Delay(20);
 	}
   /* USER CODE END WHILE */
 
