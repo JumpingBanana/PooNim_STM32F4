@@ -164,11 +164,14 @@ void USART2_IRQHandler(void)
 void TIM5_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM5_IRQn 0 */
-
+	/**
+	Timer 5 setup as internal interrupt. This function will get call
+	every 0.05 sec (20 Hz)
+	**/
   /* USER CODE END TIM5_IRQn 0 */
   HAL_TIM_IRQHandler(&htim5);
   /* USER CODE BEGIN TIM5_IRQn 1 */
-
+	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle Discovery's on-board Red LED, PD14
   /* USER CODE END TIM5_IRQn 1 */
 }
 

@@ -114,8 +114,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	printf("PooNim Firmware\n");
 	printf("%i\n", INT8_MAX);
-	//Dummy receive data to get thing started
-	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer));
+	
+	//Start UART2 receive in non-blocking mode
+	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); //Dummy receive data to get thing started
+	HAL_TIM_Base_Start_IT(&htim5);	//10Hz interrupt
+	//Start Timer5 interrupt
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
