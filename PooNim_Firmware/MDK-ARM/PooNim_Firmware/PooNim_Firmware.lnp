@@ -1,5 +1,6 @@
 --cpu=Cortex-M4.fp
 "poonim_firmware\startup_stm32f407xx.o"
+"poonim_firmware\motor.o"
 "poonim_firmware\main.o"
 "poonim_firmware\gpio.o"
 "poonim_firmware\adc.o"
@@ -9,7 +10,6 @@
 "poonim_firmware\usart.o"
 "poonim_firmware\stm32f4xx_it.o"
 "poonim_firmware\stm32f4xx_hal_msp.o"
-"poonim_firmware\motor.o"
 "poonim_firmware\stm32f4xx_hal_adc.o"
 "poonim_firmware\stm32f4xx_hal_adc_ex.o"
 "poonim_firmware\stm32f4xx_hal_spi.o"
