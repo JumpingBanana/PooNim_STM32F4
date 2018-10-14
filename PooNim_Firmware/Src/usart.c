@@ -43,7 +43,9 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-uint8_t UART2_TxBuffer[8];
+#include "motor.h"	//for motor
+
+uint8_t UART2_TxBuffer[12];
 uint8_t UART2_RxBuffer[8];
 CMD_HandlerTypeDef UART2_CMD;
 /* USER CODE END 0 */
@@ -210,19 +212,46 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 */
 //@brief  Rx Transfer completed callbacks.
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
+{	
 	UART2_CMD = SerialReceiveCMD();
+
+	uint8_t aByte[2];
 	
+	//Transmit data back?
+	UART2_TxBuffer[0] = 0x5B;	// '['
+	UART2_TxBuffer[1] = 0x61;	// 'a'
+	//Send Encoder count back
+	int16Conv(motor1.Encoder_value, aByte);
+	UART2_TxBuffer[2] = aByte[0];
+	UART2_TxBuffer[3] = aByte[1];
+	
+	int16Conv(motor2.Encoder_value, aByte);
+	UART2_TxBuffer[4] = aByte[0];
+	UART2_TxBuffer[5] = aByte[1];
+	
+	int16Conv(motor3.Encoder_value, aByte);
+	UART2_TxBuffer[6] = aByte[0];
+	UART2_TxBuffer[7] = aByte[1];
+	
+	int16Conv(motor4.Encoder_value, aByte);
+	UART2_TxBuffer[8] = aByte[0];
+	UART2_TxBuffer[9] = aByte[1];
+	
+	UART2_TxBuffer[10] = 0x0D;
+	UART2_TxBuffer[11] = 0x5D;	// ']'
+	//Send out data
+	HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
 }
 
 //@brief  Tx Transfer completed callbacks.
-void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-
+	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);	//Toggle Blue LED
 }
 
 CMD_HandlerTypeDef SerialReceiveCMD(void)
 {
+	//UART2_RxBuffer is a global variables
 	CMD_HandlerTypeDef recv_cmd;
 	
 	//Check Head and Tail
@@ -243,6 +272,18 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 	}
 	
 	return recv_cmd;
+}
+
+void int16Conv(int16_t val_16, uint8_t *aByte)
+{
+    aByte[0] = (uint8_t)(val_16);
+    aByte[1] = (uint8_t)(val_16 >> 8);
+}
+
+int16_t uint8Conv(uint8_t *aByte)
+{
+    int16_t result = ((int16_t)(aByte[1]) << 8) | ((int16_t)(aByte[0]));
+    return result;
 }
 
 /* USER CODE END 1 */

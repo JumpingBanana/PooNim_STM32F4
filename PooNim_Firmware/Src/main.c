@@ -122,7 +122,8 @@ int main(void)
 	printf("PooNim Firmware\n");
 	
 	//Start UART2 receive in non-blocking mode
-	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); //Dummy receive data to get thing started
+	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); 	//Dummy receive data to get thing started
+	HAL_UART_Transmit_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer));	//Dummy receive data to get thing started
 	//Start Timer5 interrupt
 	HAL_TIM_Base_Start_IT(&htim5);	//20Hz interrupt
 	//Init Motors
@@ -142,6 +143,7 @@ int main(void)
 		switch(UART2_CMD.cmd_id) {
 			case 0x31:
 				//Set PooNim speed
+				//received cmd as (vel_x,vel_y,rot_w)
 				//convert received uint8_t to float -> (float)(((int8_t)(UART2_CMD.data[0])*1.0f)/INT8_MAX)
 				PooNim_CMD.vel_x = (float)(((int8_t)(UART2_CMD.data[0])*1.0f)/INT8_MAX);
 				PooNim_CMD.vel_y = (float)(((int8_t)(UART2_CMD.data[1])*1.0f)/INT8_MAX);
@@ -150,15 +152,15 @@ int main(void)
 				float wheel_speed[4];
 				Robot_CalWheelSpeed(&PooNim_CMD, wheel_speed);
 			
-				printf("speed cmd:: (%.3f, %.3f, %.3f) | Wheel speed:: (%.3f, %.3f, %.3f, %.3f)\n", 
-					PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w, wheel_speed[0], wheel_speed[1], wheel_speed[2], wheel_speed[3]);
+				//printf("speed cmd:: (%.3f, %.3f, %.3f) | Wheel speed:: (%.3f, %.3f, %.3f, %.3f)\n", 
+				//	PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w, wheel_speed[0], wheel_speed[1], wheel_speed[2], wheel_speed[3]);
 			
 				MotorSet_speed(&motor1, wheel_speed[0]);
 				MotorSet_speed(&motor2, wheel_speed[1]);
 				MotorSet_speed(&motor3, wheel_speed[2]);
 				MotorSet_speed(&motor4, wheel_speed[3]);
 				
-				//printf("%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
+				printf("%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
 				break;
 			
 			case 0x32:
@@ -198,7 +200,7 @@ int main(void)
 		//Orange
 		if(button_O.ButtonState)
 		{
-			//Do something
+			//Run system check function
 			SystemCheck();
 			button_O.PressedCount = 0;		//clear count
 			button_O.ButtonState = false;	//clear state

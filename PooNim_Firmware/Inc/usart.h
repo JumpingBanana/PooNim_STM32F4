@@ -65,13 +65,15 @@ typedef struct {
 
 CMD_HandlerTypeDef SerialReceiveCMD(void);
 extern CMD_HandlerTypeDef UART2_CMD;
-extern uint8_t UART2_TxBuffer[8];
+extern uint8_t UART2_TxBuffer[12];
 /* USER CODE END Private defines */
 
 extern void _Error_Handler(char *, int);
 
 void MX_USART2_UART_Init(void);
 void MX_USART3_UART_Init(void);
+void int16Conv(int16_t val_16, uint8_t *aByte);	//Convert from int16_t to 2 byte of uint8_t
+int16_t uint8Conv(uint8_t *aByte);							//Convert from 2 byte of uint8_t to int16_t
 
 /* USER CODE BEGIN Prototypes */
 

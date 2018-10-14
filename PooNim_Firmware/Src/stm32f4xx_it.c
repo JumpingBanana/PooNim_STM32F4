@@ -162,7 +162,7 @@ void USART2_IRQHandler(void)
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 	//This should keep receive interrupt alive after routine get called.
-	//Interupt every time UART2 receive 32 byte of data
+	//Interupt every time UART2 receive 8 byte of data
 	HAL_UART_Receive_IT(&huart2, (uint8_t *)UART2_RxBuffer, sizeof(UART2_RxBuffer));
   /* USER CODE END USART2_IRQn 1 */
 }

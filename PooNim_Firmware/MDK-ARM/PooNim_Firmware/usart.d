@@ -37,3 +37,4 @@ poonim_firmware\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.
 poonim_firmware\usart.o: ../Inc/circular-byte-buffer.h
 poonim_firmware\usart.o: ../Inc/gpio.h
 poonim_firmware\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poonim_firmware\usart.o: ../Inc/motor.h
