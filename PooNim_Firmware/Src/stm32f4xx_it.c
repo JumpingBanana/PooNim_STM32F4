@@ -38,6 +38,7 @@
 /* USER CODE BEGIN 0 */
 #include "motor.h"	//For motor handler
 #include "tim.h"		//For timer handler
+#include "gpio.h"		//For buttons
 
 extern uint8_t UART2_TxBuffer[8];
 extern uint8_t UART2_RxBuffer[8];
@@ -48,7 +49,6 @@ extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim5;
 extern UART_HandleTypeDef huart2;
-
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -81,11 +81,13 @@ void SysTick_Handler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-
+	//This is interrupt for Button_R (Red)
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
-
+	//ButtonState need to be clear by another process
+	button_R.PressedCount++;
+	button_R.ButtonState = true;
   /* USER CODE END EXTI2_IRQn 1 */
 }
 
@@ -95,11 +97,13 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI3_IRQn 0 */
-
+	//This is interrupt for Button_O (Orange)
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
-
+	//ButtonState need to be clear by another process
+	button_O.PressedCount++;
+	button_O.ButtonState = true;
   /* USER CODE END EXTI3_IRQn 1 */
 }
 
@@ -109,11 +113,12 @@ void EXTI3_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI4_IRQn 0 */
-
+	//This is interrupt for Button_G (Green)
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
   /* USER CODE BEGIN EXTI4_IRQn 1 */
-
+	button_G.PressedCount++;
+	button_G.ButtonState = true;
   /* USER CODE END EXTI4_IRQn 1 */
 }
 
@@ -123,7 +128,7 @@ void EXTI4_IRQHandler(void)
 void ADC_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC_IRQn 0 */
-
+	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);	//Toggle Blue LED
   /* USER CODE END ADC_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc1);
   /* USER CODE BEGIN ADC_IRQn 1 */
@@ -137,11 +142,12 @@ void ADC_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
+	//This is interrupt for Button_B (Blue)
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
+	button_B.PressedCount++;
+	button_B.ButtonState = true;
   /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
@@ -218,6 +224,9 @@ void DMA2_Stream0_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
 
+}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

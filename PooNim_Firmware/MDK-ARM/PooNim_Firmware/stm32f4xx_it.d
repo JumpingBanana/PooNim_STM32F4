@@ -36,3 +36,5 @@ poonim_firmware\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ha
 poonim_firmware\stm32f4xx_it.o: ../Inc/stm32f4xx_it.h
 poonim_firmware\stm32f4xx_it.o: ../Inc/motor.h
 poonim_firmware\stm32f4xx_it.o: ../Inc/tim.h
+poonim_firmware\stm32f4xx_it.o: ../Inc/gpio.h
+poonim_firmware\stm32f4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

@@ -55,7 +55,8 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-//CMD_HandlerTypeDef UART2_cmd;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -79,6 +80,7 @@ static void MX_NVIC_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	//Receive dummy data via UART2
 	uint8_t initialRxBuffer[8];
   
   /* USER CODE END 1 */
@@ -129,12 +131,14 @@ int main(void)
 	InitButtons();
 	//Some Hardware check
 	//SystemCheck();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		//Process UART2 message
 		switch(UART2_CMD.cmd_id) {
 			case 0x31:
 				//Set PooNim speed
@@ -145,14 +149,16 @@ int main(void)
 			
 				float wheel_speed[4];
 				Robot_CalWheelSpeed(&PooNim_CMD, wheel_speed);
+			
 				printf("speed cmd:: (%.3f, %.3f, %.3f) | Wheel speed:: (%.3f, %.3f, %.3f, %.3f)\n", 
 					PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w, wheel_speed[0], wheel_speed[1], wheel_speed[2], wheel_speed[3]);
-					
+			
 				MotorSet_speed(&motor1, wheel_speed[0]);
 				MotorSet_speed(&motor2, wheel_speed[1]);
 				MotorSet_speed(&motor3, wheel_speed[2]);
 				MotorSet_speed(&motor4, wheel_speed[3]);
-			
+				
+				//printf("%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
 				break;
 			
 			case 0x32:
@@ -162,6 +168,40 @@ int main(void)
 			default:
 				//What to do? Print out message for now.
 				printf("Unknown command ID, recieved: %x\n", UART2_CMD.cmd_id);
+		}
+		
+		//Process Button state
+		//Green
+		if(button_G.ButtonState)
+		{
+			//Do something
+			//button_G.PressedCount = 0;		//clear count
+			//button_G.ButtonState = false;	//clear state
+		}
+		
+		//Blue
+		if(button_B.ButtonState)
+		{
+			//Do something
+			//button_B.PressedCount = 0;		//clear count
+			//button_B.ButtonState = false;	//clear state
+		}
+		
+		//Red
+		if(button_R.ButtonState)
+		{
+			//Do something
+			//button_R.PressedCount = 0;		//clear count
+			//button_R.ButtonState = false;	//clear state
+		}
+		
+		//Orange
+		if(button_O.ButtonState)
+		{
+			//Do something
+			SystemCheck();
+			button_O.PressedCount = 0;		//clear count
+			button_O.ButtonState = false;	//clear state
 		}
 		
 		//printf("Encoder:\t%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
