@@ -39,7 +39,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
-
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
@@ -272,6 +271,12 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 	}
 	
 	return recv_cmd;
+}
+
+
+CMD_HandlerTypeDef GetSerialCMD(void)
+{
+	return UART2_CMD;
 }
 
 void int16Conv(int16_t val_16, uint8_t *aByte)

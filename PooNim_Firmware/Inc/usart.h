@@ -48,7 +48,7 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#include "circular-byte-buffer.h"
+
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart2;
@@ -64,8 +64,7 @@ typedef struct {
 }CMD_HandlerTypeDef;
 
 CMD_HandlerTypeDef SerialReceiveCMD(void);
-extern CMD_HandlerTypeDef UART2_CMD;
-extern uint8_t UART2_TxBuffer[12];
+CMD_HandlerTypeDef GetSerialCMD(void);
 /* USER CODE END Private defines */
 
 extern void _Error_Handler(char *, int);

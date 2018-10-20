@@ -82,7 +82,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	//Receive dummy data via UART2
 	uint8_t initialRxBuffer[8];
-  
+  CMD_HandlerTypeDef UART2_CMD;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -140,6 +140,7 @@ int main(void)
   while (1)
   {
 		//Process UART2 message
+		UART2_CMD = GetSerialCMD();
 		switch(UART2_CMD.cmd_id) {
 			case 0x31:
 				//Set PooNim speed

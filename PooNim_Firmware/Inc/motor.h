@@ -29,6 +29,8 @@ extern MOTOR_HandlerTypeDef motor2;
 extern MOTOR_HandlerTypeDef motor3;
 extern MOTOR_HandlerTypeDef motor4;
 
+int16_t calEncoder_value(int Encoder_feedback, int Direction_feedback);
+void MotorUpdate_Encoder(void);
 void Update_Encoder_value(MOTOR_HandlerTypeDef *motor);
 void MotorInit(MOTOR_HandlerTypeDef *motor, int ID);
 void MotorSet_PIDgain(MOTOR_HandlerTypeDef *motor, float Kp, float Ki, float Kd);

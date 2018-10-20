@@ -2,8 +2,7 @@
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 
-extern TIM_HandleTypeDef htim9;
-extern TIM_HandleTypeDef htim12;
+#include "tim.h"	//For timer handler
 
 #define PWM12_MAX	33599
 #define PWM34_MAX	16799
@@ -12,6 +11,55 @@ MOTOR_HandlerTypeDef motor1;
 MOTOR_HandlerTypeDef motor2;
 MOTOR_HandlerTypeDef motor3;
 MOTOR_HandlerTypeDef motor4;
+
+int16_t calEncoder_value(int Encoder_feedback, int Direction_feedback)
+{
+	// From Encoder_feedback and Direction_feedback calculate Encoder_value
+	// which is signed value, indicated direction of turning
+	static int16_t Encoder_value;
+	
+	if(Encoder_feedback == 0)
+	{
+		Encoder_value = 0;
+	}else{
+		if(Direction_feedback == 0)
+		{
+			//Clock-wise direction
+			Encoder_value = Encoder_feedback;
+		}else{
+			//Counter clock-wise direction
+			Encoder_value = -1*(2048 - Encoder_feedback);
+		}
+	}
+	return Encoder_value;
+}
+
+void MotorUpdate_Encoder(void)
+{
+	//Timer 1 for motor1
+	motor1.Encoder_feedback = __HAL_TIM_GetCounter(&htim1);
+	motor1.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim1);
+	motor1.Encoder_value = calEncoder_value(motor1.Encoder_feedback, motor1.Direction_feedback);
+	motor1.flag_update = 1;	//Set update flag
+	
+	//Timer 2 for motor2
+	motor2.Encoder_feedback = __HAL_TIM_GetCounter(&htim2);
+	motor2.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim2);
+	motor2.Encoder_value = calEncoder_value(motor2.Encoder_feedback, motor2.Direction_feedback);
+	motor2.flag_update = 1;	//Set update flag
+	
+	//Timer 3 for motor3
+	motor3.Encoder_feedback = __HAL_TIM_GetCounter(&htim3);
+	motor3.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim3);
+	motor3.Encoder_value = calEncoder_value(motor3.Encoder_feedback, motor3.Direction_feedback);
+	motor3.flag_update = 1;	//Set update flag
+	
+	//Timer 4 for motor4
+	motor4.Encoder_feedback = __HAL_TIM_GetCounter(&htim4);
+	motor4.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim4);
+	motor4.Encoder_value = calEncoder_value(motor4.Encoder_feedback, motor4.Direction_feedback);
+	motor4.flag_update = 1;	//Set update flag
+}
 
 void Update_Encoder_value(MOTOR_HandlerTypeDef *motor){
 	//Calculate Encoder value for PID controller to use

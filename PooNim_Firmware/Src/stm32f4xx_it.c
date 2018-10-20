@@ -47,7 +47,7 @@ extern uint8_t UART2_RxBuffer[8];
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
-extern TIM_HandleTypeDef htim5;
+//extern TIM_HandleTypeDef htim5;
 extern UART_HandleTypeDef huart2;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -179,32 +179,17 @@ void TIM5_IRQHandler(void)
 	**/
   /* USER CODE END TIM5_IRQn 0 */
   HAL_TIM_IRQHandler(&htim5);
-  /* USER CODE BEGIN TIM5_IRQn 1 */
+  
+	/* USER CODE BEGIN TIM5_IRQn 1 */
 	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle Discovery's on-board Red LED, PD14
 	
-	//Update Encoder count
-	motor1.Encoder_feedback = __HAL_TIM_GetCounter(&htim1);
-	motor1.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim1);
-	Update_Encoder_value(&motor1);
-	motor1.flag_update = 1;	//Set update flag
+	// Update encoder reading
+	MotorUpdate_Encoder();
+	
+	// Reset counter
 	__HAL_TIM_SetCounter(&htim1, 0);
-	
-	motor2.Encoder_feedback = __HAL_TIM_GetCounter(&htim2);
-	motor2.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim2);
-	Update_Encoder_value(&motor2);
-	motor2.flag_update = 1;	//Set update flag
 	__HAL_TIM_SetCounter(&htim2, 0);
-	
-	motor3.Encoder_feedback = __HAL_TIM_GetCounter(&htim3);
-	motor3.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim3);
-	Update_Encoder_value(&motor3);
-	motor3.flag_update = 1;	//Set update flag
 	__HAL_TIM_SetCounter(&htim3, 0);
-	
-	motor4.Encoder_feedback = __HAL_TIM_GetCounter(&htim4);
-	motor4.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim4);
-	Update_Encoder_value(&motor4);
-	motor4.flag_update = 1;	//Set update flag
 	__HAL_TIM_SetCounter(&htim4, 0);
   /* USER CODE END TIM5_IRQn 1 */
 }
