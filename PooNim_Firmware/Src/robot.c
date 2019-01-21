@@ -12,16 +12,25 @@ PooNim_HandlerTypeDef PooNim_CMD;
 
 void Robot_CalWheelSpeed(PooNim_HandlerTypeDef *PooNim_CMD, float *WheelSpeed)
 {
+	//Vx is forward direction
+	//Vy is translate to the right direction
+	//Motor rotation follow left-hand rule
 	float vel_x, vel_y, rot_w;
 
 	vel_x = PooNim_CMD->vel_x;
 	vel_y = PooNim_CMD->vel_y;
 	rot_w = PooNim_CMD->rot_w;
-	
+	/*
 	WheelSpeed[0] = (-1.0f*SIN45*vel_x)	+ (1.0f*COS45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
 	WheelSpeed[1] = (-1.0f*SIN45*vel_x)	+ (-1.0f*COS45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
 	WheelSpeed[2] = (1.0f*SIN45*vel_x)	+ (-1.0f*COS45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
 	WheelSpeed[3] = (1.0f*SIN45*vel_x)	+ (1.0f*COS45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
+	*/
+	WheelSpeed[0] = (1.0f*COS45*vel_x)	+ (-1.0f*SIN45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
+	WheelSpeed[1] = (-1.0f*SIN45*vel_x)	+ (-1.0f*COS45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
+	WheelSpeed[2] = (-1.0f*COS45*vel_x)	+ (1.0f*SIN45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
+	WheelSpeed[3] = (1.0f*SIN45*vel_x)	+ (1.0f*COS45*vel_y)	+ (1.0f*ROBOT_RADIUS*rot_w);
+
 	
 	//This is a dummy code, just for test communication and control motor
 	for(int i = 0; i < 4; i++)

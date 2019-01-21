@@ -105,65 +105,18 @@ void MotorSet_Setpoint(MOTOR_HandlerTypeDef *motor, signed int setPoint){
 }
 
 void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
+	//Motor rotation follow left-hand rule
 	int PWM_set = 0;
 	//PWM value input from -1.0 to 1.0
 	if(PWM > 1.0f) PWM = 1.0f;
 	if(PWM < -1.0f) PWM = -1.0f;
 	
 	switch(motor->ID){
-		case 1: //Motor1
+		case 1: //MotorDrive 3	
 			if(PWM > 0.0f){
-			//Clock-wise direction, positive PWM
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_RESET);	//Dir1_A -- PE12
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);		//Dir1_B -- PE13
-			PWM_set = (int)((PWM + motor->DeadBand_CW) * PWM12_MAX);
-			}
-			if(PWM == 0.0f){
-				//Brake motor
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);		//Dir1_A -- PE12
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);		//Dir1_B -- PE13
-				PWM_set = 0;
-			}
-			if(PWM < 0.0f){
-				//Counter Clock-wise direction, negative PWM
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);		//Dir1_A -- PE12
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);	//Dir1_B -- PE13
-				PWM_set = (int)((-1*PWM - motor->DeadBand_CCW) * PWM12_MAX);
-			}
-
-			//printf("%f \t %i \n", PWM, PWM_set);
-			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, PWM_set);	//PWM1 -- PE5
-			break;//Case 1
-		
-		case 2: //Motor2
-			if(PWM > 0.0f){
-			//Clock-wise direction, positive PWM
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_RESET);	//Dir2_A -- PE14
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);		//Dir2_B -- PE15
-			PWM_set = (int)((PWM + motor->DeadBand_CW) * PWM12_MAX);
-			}
-			if(PWM == 0.0f){
-				//Brake motor
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);		//Dir2_A -- PE14
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);		//Dir2_B -- PE15
-				PWM_set = 0;
-			}
-			if(PWM < 0.0f){
-				//Counter Clock-wise direction, negative PWM
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);		//Dir2_A -- PE14
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);	//Dir2_B -- PE15
-				PWM_set = (int)((-1*PWM - motor->DeadBand_CCW) * PWM12_MAX);
-			}
-
-			//printf("%f \t %i \n", PWM, PWM_set);
-			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_2, PWM_set);	//PWM2 -- PE6
-			break;//Case 2
-			
-		case 3: //Motor3
-			if(PWM > 0.0f){
-			//Clock-wise direction, positive PWM
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);	//Dir3_A -- PC4
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);		//Dir3_B -- PC5
+			//Counter Clock-wise direction, positive PWM
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET);	//Dir3_A -- PC4
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);		//Dir3_B -- PC5
 			PWM_set = (int)((PWM + motor->DeadBand_CW) * PWM34_MAX);
 			}
 			if(PWM == 0.0f){
@@ -173,21 +126,69 @@ void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
 				PWM_set = 0;
 			}
 			if(PWM < 0.0f){
-				//Counter Clock-wise direction, negative PWM
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET);		//Dir3_A -- PC4
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);	//Dir3_B -- PC5
+				//Clock-wise direction, negative PWM
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);		//Dir3_A -- PC4
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);	//Dir3_B -- PC5
 				PWM_set = (int)((-1*PWM - motor->DeadBand_CCW) * PWM34_MAX);
 			}
 
 			//printf("%f \t %i \n", PWM, PWM_set);
 			__HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, PWM_set);	//PWM3 -- PB14
+			break;//Case 1
+			
+		case 2: //MotorDrive 1
+			if(PWM > 0.0f){
+			//Counter Clock-wise direction, positive PWM
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);	//Dir1_A -- PE12
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);		//Dir1_B -- PE13
+			PWM_set = (int)((PWM + motor->DeadBand_CW) * PWM12_MAX);
+			}
+			if(PWM == 0.0f){
+				//Brake motor
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);		//Dir1_A -- PE12
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);		//Dir1_B -- PE13
+				PWM_set = 0;
+			}
+			if(PWM < 0.0f){
+				//Clock-wise direction, negative PWM
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_RESET);		//Dir1_A -- PE12
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);	//Dir1_B -- PE13
+				PWM_set = (int)((-1*PWM - motor->DeadBand_CCW) * PWM12_MAX);
+			}
+
+			//printf("%f \t %i \n", PWM, PWM_set);
+			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, PWM_set);	//PWM1 -- PE5
+			break;//Case 2
+		
+		case 3: //MotorDrive 2
+			if(PWM > 0.0f){
+			//Counter Clock-wise direction, positive PWM
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);	//Dir2_A -- PE14
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);		//Dir2_B -- PE15
+			PWM_set = (int)((PWM + motor->DeadBand_CW) * PWM12_MAX);
+			}
+			if(PWM == 0.0f){
+				//Brake motor
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);		//Dir2_A -- PE14
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);		//Dir2_B -- PE15
+				PWM_set = 0;
+			}
+			if(PWM < 0.0f){
+				//Clock-wise direction, negative PWM
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_RESET);		//Dir2_A -- PE14
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);	//Dir2_B -- PE15
+				PWM_set = (int)((-1*PWM - motor->DeadBand_CCW) * PWM12_MAX);
+			}
+
+			//printf("%f \t %i \n", PWM, PWM_set);
+			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_2, PWM_set);	//PWM2 -- PE6
 			break;//Case 3
 		
-		case 4: //Motor4
+		case 4: //MotorDrive 4
 			if(PWM > 0.0f){
-			//Clock-wise direction, positive PWM
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);	//Dir4_A -- PE7
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);		//Dir4_B -- PE8
+			//Counter Clock-wise direction, positive PWM
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);	//Dir4_A -- PE7
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);		//Dir4_B -- PE8
 			PWM_set = (int)((PWM + motor->DeadBand_CW) * PWM34_MAX);
 			}
 			if(PWM == 0.0f){
@@ -197,9 +198,9 @@ void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
 				PWM_set = 0;
 			}
 			if(PWM < 0.0f){
-				//Counter Clock-wise direction, negative PWM
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);		//Dir4_A -- PE7
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);	//Dir4_B -- PE8
+				//Clock-wise direction, negative PWM
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);		//Dir4_A -- PE7
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);	//Dir4_B -- PE8
 				PWM_set = (int)((-1*PWM - motor->DeadBand_CCW) * PWM34_MAX);
 			}
 

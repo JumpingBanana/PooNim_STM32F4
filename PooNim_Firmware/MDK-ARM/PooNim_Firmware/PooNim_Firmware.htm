@@ -3,7 +3,7 @@
 <title>Static Call Graph - [PooNim_Firmware\PooNim_Firmware.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image PooNim_Firmware\PooNim_Firmware.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sat Oct 20 14:00:55 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Mon Jan 21 22:41:07 2019
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1112,7 +1112,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[c2]"></a>InitMotors</STRONG> (Thumb, 206 bytes, Stack size 16 bytes, main.o(i.InitMotors))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = InitMotors &rArr; MotorSet_speed
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = InitMotors &rArr; MotorSet_speed
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PWM_Start
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Encoder_Start
@@ -1255,8 +1255,8 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;InitMotors
 </UL>
 
-<P><STRONG><a name="[c5]"></a>MotorSet_speed</STRONG> (Thumb, 614 bytes, Stack size 32 bytes, motor.o(i.MotorSet_speed))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = MotorSet_speed
+<P><STRONG><a name="[c5]"></a>MotorSet_speed</STRONG> (Thumb, 674 bytes, Stack size 40 bytes, motor.o(i.MotorSet_speed))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = MotorSet_speed
 </UL>
 <BR>[Calls]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
@@ -1296,7 +1296,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
 <P><STRONG><a name="[da]"></a>SystemCheck</STRONG> (Thumb, 382 bytes, Stack size 16 bytes, main.o(i.SystemCheck))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = SystemCheck &rArr; MotorSet_speed
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = SystemCheck &rArr; MotorSet_speed
 </UL>
 <BR>[Calls]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonLED_set
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonLED_reset
