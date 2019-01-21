@@ -112,7 +112,7 @@ void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
 	if(PWM < -1.0f) PWM = -1.0f;
 	
 	switch(motor->ID){
-		case 1: //MotorDrive 3	
+		case 1: //MotorDrive 3 -- Drive motor 1
 			if(PWM > 0.0f){
 			//Counter Clock-wise direction, positive PWM
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET);	//Dir3_A -- PC4
@@ -136,7 +136,7 @@ void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
 			__HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, PWM_set);	//PWM3 -- PB14
 			break;//Case 1
 			
-		case 2: //MotorDrive 1
+		case 2: //MotorDrive 1  -- Drive motor 2
 			if(PWM > 0.0f){
 			//Counter Clock-wise direction, positive PWM
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);	//Dir1_A -- PE12
@@ -160,7 +160,7 @@ void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
 			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, PWM_set);	//PWM1 -- PE5
 			break;//Case 2
 		
-		case 3: //MotorDrive 2
+		case 3: //MotorDrive 2 -- Drive motor 3 
 			if(PWM > 0.0f){
 			//Counter Clock-wise direction, positive PWM
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);	//Dir2_A -- PE14
@@ -184,7 +184,7 @@ void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM){
 			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_2, PWM_set);	//PWM2 -- PE6
 			break;//Case 3
 		
-		case 4: //MotorDrive 4
+		case 4: //MotorDrive 4 -- Drive motor 4 
 			if(PWM > 0.0f){
 			//Counter Clock-wise direction, positive PWM
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);	//Dir4_A -- PE7
