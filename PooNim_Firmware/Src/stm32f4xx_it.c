@@ -36,9 +36,10 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#include "motor.h"	//For motor handler
-#include "tim.h"		//For timer handler
-#include "gpio.h"		//For buttons
+#include "motor.h"	// For motor handler
+#include "tim.h"		// For timer handler
+#include "gpio.h"		// For buttons
+#include "common.h"	// For Global variables
 
 extern uint8_t UART2_TxBuffer[8];
 extern uint8_t UART2_RxBuffer[8];
@@ -181,9 +182,12 @@ void TIM5_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim5);
   
 	/* USER CODE BEGIN TIM5_IRQn 1 */
-	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle Discovery's on-board Red LED, PD14
 	
 	// Update encoder reading
+	// To do: set flags, and call MotorUpdate_Encoder in the Main-loop
+	// using state-machine instead 
+	g_sysTicks_50ms++;	// 50ms. tick
+	if((g_sysTicks_50ms % 2) == 0) g_sysTicks_100ms++;	// 100ms. tick
 	MotorUpdate_Encoder();
 	
 	// Reset counter

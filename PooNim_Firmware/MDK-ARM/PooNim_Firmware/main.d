@@ -42,3 +42,4 @@ poonim_firmware\main.o: ../Inc/gpio.h
 poonim_firmware\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 poonim_firmware\main.o: ../Inc/motor.h
 poonim_firmware\main.o: ../Inc/robot.h
+poonim_firmware\main.o: ../Inc/common.h

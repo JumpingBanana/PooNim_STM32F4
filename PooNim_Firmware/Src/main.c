@@ -49,6 +49,7 @@
 /* USER CODE BEGIN Includes */
 #include "motor.h"
 #include "robot.h"
+#include "common.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -69,6 +70,12 @@ static void MX_NVIC_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+//  GLobal variables
+uint32_t volatile g_sysTicks_50ms = 0;		// Externed in common.h
+uint32_t volatile g_sysTicks_100ms = 0;	// Externed in common.h
+// Local variables
+uint32_t sysTick_50ms = 0;
+uint32_t sysTick_100ms = 0;
 
 /* USER CODE END 0 */
 
@@ -79,7 +86,7 @@ static void MX_NVIC_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */	
 	//Receive dummy data via UART2
 	uint8_t initialRxBuffer[8];
   CMD_HandlerTypeDef UART2_CMD;
@@ -139,6 +146,28 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		uint32_t ticks_50ms = g_sysTicks_50ms;
+		uint32_t ticks_100ms = g_sysTicks_100ms;
+		
+		/*------------------------------*/
+		/*		Periodic function call		*/
+		/*------------------------------*/
+		if(sysTick_50ms != ticks_50ms)
+		{
+			HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
+			
+			
+			sysTick_50ms = ticks_50ms;
+		}
+		
+		if(sysTick_100ms != ticks_100ms)
+		{
+			
+
+			sysTick_100ms = ticks_100ms;
+		}
+		
+		/*
 		//Process UART2 message
 		UART2_CMD = GetSerialCMD();
 		switch(UART2_CMD.cmd_id) {
@@ -209,7 +238,9 @@ int main(void)
 		
 		//printf("Encoder:\t%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
 		HAL_Delay(20);
-	}
+		*/
+		
+	}	//  While=loop
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
