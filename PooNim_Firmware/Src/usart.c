@@ -44,13 +44,13 @@
 /* USER CODE BEGIN 0 */
 #include "motor.h"	//for motor
 
-uint8_t UART2_TxBuffer[12];
-uint8_t UART2_RxBuffer[8];
+uint8_t UART2_TxBuffer[12];		
+uint8_t UART2_RxBuffer[8];		
 CMD_HandlerTypeDef UART2_CMD;
 /* USER CODE END 0 */
 
-UART_HandleTypeDef huart2;
-UART_HandleTypeDef huart3;
+UART_HandleTypeDef huart2;		// Externed in common.h
+UART_HandleTypeDef huart3;		// Externed in common.h
 
 /* USART2 init function */
 

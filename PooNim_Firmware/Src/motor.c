@@ -37,20 +37,20 @@ int16_t calEncoder_value(int Encoder_feedback, int Direction_feedback)
 void MotorUpdate_Encoder(void)
 {
 	//Timer 1 for motor1
-	motor1.Encoder_feedback = __HAL_TIM_GetCounter(&htim1);
-	motor1.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim1);
+	motor1.Encoder_feedback = __HAL_TIM_GetCounter(&htim3);
+	motor1.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim3);
 	motor1.Encoder_value = calEncoder_value(motor1.Encoder_feedback, motor1.Direction_feedback);
 	motor1.flag_update = 1;	//Set update flag
 	
 	//Timer 2 for motor2
-	motor2.Encoder_feedback = __HAL_TIM_GetCounter(&htim2);
-	motor2.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim2);
+	motor2.Encoder_feedback = __HAL_TIM_GetCounter(&htim1);
+	motor2.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim1);
 	motor2.Encoder_value = calEncoder_value(motor2.Encoder_feedback, motor2.Direction_feedback);
 	motor2.flag_update = 1;	//Set update flag
 	
 	//Timer 3 for motor3
-	motor3.Encoder_feedback = __HAL_TIM_GetCounter(&htim3);
-	motor3.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim3);
+	motor3.Encoder_feedback = __HAL_TIM_GetCounter(&htim2);
+	motor3.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim2);
 	motor3.Encoder_value = calEncoder_value(motor3.Encoder_feedback, motor3.Direction_feedback);
 	motor3.flag_update = 1;	//Set update flag
 	
@@ -59,6 +59,13 @@ void MotorUpdate_Encoder(void)
 	motor4.Direction_feedback = __HAL_TIM_DIRECTION_STATUS(&htim4);
 	motor4.Encoder_value = calEncoder_value(motor4.Encoder_feedback, motor4.Direction_feedback);
 	motor4.flag_update = 1;	//Set update flag
+	
+	// Reset counter -- to start encoder count again
+	__HAL_TIM_SetCounter(&htim1, 0);
+	__HAL_TIM_SetCounter(&htim2, 0);
+	__HAL_TIM_SetCounter(&htim3, 0);
+	__HAL_TIM_SetCounter(&htim4, 0);
+  /* USER CODE END TIM5_IRQn 1 */
 }
 
 void Update_Encoder_value(MOTOR_HandlerTypeDef *motor){
@@ -90,8 +97,8 @@ void MotorInit(MOTOR_HandlerTypeDef *motor, int ID){
 	
 	//Initial value of PID gain
 	motor->Kp = 0.002;
-	motor->Ki = 0.0000002;
-	motor->Kd = 0.0;
+	motor->Ki = 0.00004;
+	//motor->Kd = 0.0;
 }
 
 void MotorSet_PIDgain(MOTOR_HandlerTypeDef *motor, float Kp, float Ki, float Kd){
@@ -216,9 +223,11 @@ void MotorControl_PID(MOTOR_HandlerTypeDef *motor){
 
 	//Motor Control
 	motor->Error = motor->Setpoint - motor->Encoder_value;
+	//Accumulate error
+	motor->Error_acc = motor->Error_acc + motor->Error;
 	
 	//Prevent motor from going crazy when error is too high.
-	if((motor->Error >= 150) || (motor->Error <= -150)){
+	if((motor->Error >= 1500) || (motor->Error <= -1500)){
 		//Command to drive motor
 		MotorSet_speed(motor, 0.0);
 		motor->Error = 0;
@@ -234,7 +243,7 @@ void MotorControl_PID(MOTOR_HandlerTypeDef *motor){
 		MotorSet_speed(motor, P_out + I_out + D_out);
 		
 		//Accumulate error
-		motor->Error_acc = motor->Error_acc + motor->Error;
+		//motor->Error_acc = motor->Error_acc + motor->Error;
 	}
 }
 

@@ -60,8 +60,8 @@ typedef struct
 	GPIO_TypeDef* LEDPort;							//Port of the LED
 	
 	uint16_t PressedCount;
-	bool ButtonState;										//State of the button
-	bool LEDState;											//State of the LED
+	bool volatile ButtonState;										//State of the button
+	bool volatile LEDState;											//State of the LED
 }BUTTON_HandlerTypeDef;
 
 extern BUTTON_HandlerTypeDef button_R;

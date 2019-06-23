@@ -47,6 +47,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
 #include "motor.h"
 #include "robot.h"
 #include "common.h"
@@ -89,7 +90,7 @@ int main(void)
   /* USER CODE BEGIN 1 */	
 	//Receive dummy data via UART2
 	uint8_t initialRxBuffer[8];
-  CMD_HandlerTypeDef UART2_CMD;
+  //CMD_HandlerTypeDef UART2_CMD;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -133,12 +134,11 @@ int main(void)
 	HAL_UART_Transmit_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer));	//Dummy receive data to get thing started
 	//Start Timer5 interrupt
 	HAL_TIM_Base_Start_IT(&htim5);	//20Hz interrupt
-	//Init Motors
-	InitMotors();
-	//Init Buttons & LEDs
-	InitButtons();
+
 	//Some Hardware check
 	//SystemCheck();
+	// Init system state-machine
+	uint8_t systemState = 0;
 
   /* USER CODE END 2 */
 
@@ -154,15 +154,28 @@ int main(void)
 		/*------------------------------*/
 		if(sysTick_50ms != ticks_50ms)
 		{
-			HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
+			// 20 Hz call
+			//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);	//Set PooNim's on-board Red LED, PD14 High
 			
+			// Update encoder reading
+			MotorUpdate_Encoder();
+			// Motor control-loop
+			MotorControl_PID(&motor1);
+			MotorControl_PID(&motor2);
+			MotorControl_PID(&motor3);
+			MotorControl_PID(&motor4);
+			
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);	//Set PooNim's on-board Red LED, PD14 Low
 			
 			sysTick_50ms = ticks_50ms;
 		}
 		
 		if(sysTick_100ms != ticks_100ms)
 		{
-			
+			// 10 Hz call
+			// System State-Machine Update
+			systemState = systemSM_Update(systemState);
 
 			sysTick_100ms = ticks_100ms;
 		}
@@ -333,6 +346,114 @@ static void MX_NVIC_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+uint8_t systemSM_Update(uint8_t systemState)
+{
+		switch(systemState){
+			case(0):
+				// case 0
+				// Initialize parameters and variables
+				printf("Case 0\n");
+				// --Init motors
+				InitMotors();
+				printf("Initialize Motors\n");
+				// --Init Buttons
+				InitButtons();
+				printf("Initialize Buttons\n");
+				// Move to next state
+				systemState = 1;
+				
+			break;
+			
+			case(1):
+				// case 1 -- Get State from button press
+				printf("Case 1\n");
+				// -- Turn all buttons LED on
+				ButtonLED_set(&button_R);	// Green
+				ButtonLED_set(&button_G);	// Red
+				ButtonLED_set(&button_B);	// Blue
+				ButtonLED_set(&button_O);	// Orange
+			
+				if(button_R.ButtonState){
+					button_R.ButtonState = false;	// Reset button state
+					systemState = 2;	//Motor Test
+					ButtonLED_reset(&button_G);	// Green
+					ButtonLED_reset(&button_B);	// Blue
+					ButtonLED_reset(&button_O);	// Orange
+				}else if(button_G.ButtonState){
+					button_G.ButtonState = false;	// Reset button state
+					systemState = 3;	//Comm Test
+					ButtonLED_reset(&button_R);	// Red
+					ButtonLED_reset(&button_B);	// Blue
+					ButtonLED_reset(&button_O);	// Orange
+				}else if(button_B.ButtonState){
+					button_B.ButtonState = false;	// Reset button state
+					systemState = 4;	//Sensor Test
+					ButtonLED_reset(&button_G);	// Green
+					ButtonLED_reset(&button_R);	// Red
+					ButtonLED_reset(&button_O);	// Orange
+				}else if(button_O.ButtonState){
+					button_O.ButtonState = false;	// Reset button state
+					systemState = 5;	//Joystick Control
+					ButtonLED_reset(&button_G);	// Green
+					ButtonLED_reset(&button_R);	// Red
+					ButtonLED_reset(&button_B);	// Blue
+					}
+			break;
+			
+			case(2):
+				// case 2 -- Motors Test
+				printf("Case 2\n");
+				// Set Motor speed set point, in term of encoder count per update
+				MotorSet_Setpoint(&motor1, 50);
+				MotorSet_Setpoint(&motor2, 50);
+				MotorSet_Setpoint(&motor3, 50);
+				MotorSet_Setpoint(&motor4, 50);
+			
+				//MotorSet_speed(&motor1, 0.2);
+				//MotorSet_speed(&motor2, 0.2);
+				//MotorSet_speed(&motor3, 0.2);
+				//MotorSet_speed(&motor4, 0.2);
+						
+				printf("Encoder : %i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
+				printf("Error : %f\t%f\t%f\t%f\n", motor1.Error, motor2.Error, motor3.Error, motor4.Error);
+			break;
+			
+			case(3):
+				// case 3 -- Communcation Test
+				printf("Case 3\n");
+				printf("Transmit USART at 10Hz\n");
+				uint8_t test_TxBuffer[12];
+				test_TxBuffer[0] = 0x5B;	// '['
+				test_TxBuffer[11] = 0x5D;	// ']'
+				HAL_UART_Transmit_IT(&huart2, (uint8_t *)test_TxBuffer, sizeof(test_TxBuffer));
+			
+			break;
+			
+			case(4):
+				// case 4 - Sensors Test
+				printf("Case 4\n");
+				
+			
+			break;
+			
+			case(5):
+			// case 5 -- Serial Control
+				printf("Case 5\n");
+				
+			
+			break;
+			
+			default:
+				// Default state
+			break;
+		}// switch case
+		
+		//Return systemState
+		return systemState;
+}
+
+
 void InitMotors(void)
 {
 	//	Start required components for motors

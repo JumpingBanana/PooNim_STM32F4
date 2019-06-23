@@ -120,6 +120,7 @@ void EXTI4_IRQHandler(void)
   /* USER CODE BEGIN EXTI4_IRQn 1 */
 	button_G.PressedCount++;
 	button_G.ButtonState = true;
+
   /* USER CODE END EXTI4_IRQn 1 */
 }
 
@@ -188,13 +189,6 @@ void TIM5_IRQHandler(void)
 	// using state-machine instead 
 	g_sysTicks_50ms++;	// 50ms. tick
 	if((g_sysTicks_50ms % 2) == 0) g_sysTicks_100ms++;	// 100ms. tick
-	MotorUpdate_Encoder();
-	
-	// Reset counter
-	__HAL_TIM_SetCounter(&htim1, 0);
-	__HAL_TIM_SetCounter(&htim2, 0);
-	__HAL_TIM_SetCounter(&htim3, 0);
-	__HAL_TIM_SetCounter(&htim4, 0);
   /* USER CODE END TIM5_IRQn 1 */
 }
 

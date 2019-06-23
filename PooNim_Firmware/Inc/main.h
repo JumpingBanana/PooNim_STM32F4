@@ -180,6 +180,7 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
+uint8_t systemSM_Update(uint8_t systemState);
 void InitMotors(void);
 void InitButtons(void);
 void SystemCheck(void);

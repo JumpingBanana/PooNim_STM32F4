@@ -46,13 +46,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "main.h"
-
+#include "common.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
-
-extern UART_HandleTypeDef huart2;
-extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
 typedef struct {
