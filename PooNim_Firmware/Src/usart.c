@@ -248,7 +248,7 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 		printf("%i | %i |%i |%i |%i |%i |%i |%i |%i |%i |\n", recv_cmd.head, recv_cmd.cmd_id,
 			recv_cmd.data[0], recv_cmd.data[1], recv_cmd.data[2], recv_cmd.data[3],
 			recv_cmd.data[4], recv_cmd.data[5], recv_cmd.data[6], recv_cmd.tail);
-
+/*
 		UART2_TxBuffer[0] = UART2_RxBuffer[0];
 		UART2_TxBuffer[1] = UART2_RxBuffer[1];
 		UART2_TxBuffer[2] = UART2_RxBuffer[2];
@@ -260,23 +260,15 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 		UART2_TxBuffer[8] = UART2_RxBuffer[8];
 		UART2_TxBuffer[9] = UART2_RxBuffer[9];
 		HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
-		
+*/
 	}
 	
 	return recv_cmd;
 }
 
-
 CMD_HandlerTypeDef GetSerialCMD(void)
 {
 	return UART2_CMD_;
-}
-
-
-void int16Conv(int16_t val_16, uint8_t *aByte)
-{
-    aByte[0] = (uint8_t)(val_16);
-    aByte[1] = (uint8_t)(val_16 >> 8);
 }
 
 int16_t uint8Conv(uint8_t *aByte)

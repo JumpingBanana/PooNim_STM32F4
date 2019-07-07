@@ -35,3 +35,6 @@ poonim_firmware\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 poonim_firmware\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 poonim_firmware\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 poonim_firmware\motor.o: ../Inc/tim.h
+poonim_firmware\motor.o: ../Inc/common.h
+poonim_firmware\motor.o: ../Inc/usart.h
+poonim_firmware\motor.o: ../Inc/common.h

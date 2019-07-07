@@ -46,5 +46,4 @@ void Robot_CalWheelSpeed(PooNim_HandlerTypeDef *PooNim_CMD, signed int *WheelSpe
 			WheelSpeed_ENC[i] = (signed int)(-1*MAX_ENCODER_SPEED);
 		}
 	}
-	
 }

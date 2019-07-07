@@ -398,7 +398,7 @@ uint8_t systemSM_Update(uint8_t systemState)
 				MotorSet_Setpoint(&motor3, ENC_speed[2]);
 				MotorSet_Setpoint(&motor4, ENC_speed[3]);
 				//printf("%i : %i : %i : %i\n", ENC_speed[0], ENC_speed[1], ENC_speed[2], ENC_speed[3]);
-			
+				reportEncoder();		// Send encoder value through UART_Tx
 			break;
 			
 			default:

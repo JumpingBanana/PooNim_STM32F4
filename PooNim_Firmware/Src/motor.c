@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "tim.h"	//For timer handler
+#include "common.h"	// For UART interface
 
 #define PWM12_MAX	33599
 #define PWM34_MAX	16799
@@ -278,5 +279,40 @@ void MotorControl_GetDeadBand(MOTOR_HandlerTypeDef *motor, float set_speed_cw, f
 	MotorSet_speed(motor, set_speed_ccw);
 	HAL_Delay(1000);	//1000 ms delay
 	printf("Counter clock-wise tuning DONE! Motor ID: %i\t CCW: %0.2f\n", motor->ID, set_speed_ccw);
-	
 }
+
+void reportEncoder(void)
+{
+	uint8_t aByte[2];
+	
+	UART2_TxBuffer[0] = '[';
+	UART2_TxBuffer[1] = 'a';
+	
+	// Motor 1
+	int16Conv(motor1.Encoder_value, aByte);
+	UART2_TxBuffer[2] = aByte[1];		// MSB
+	UART2_TxBuffer[3] = aByte[0];		// LSB
+	// Motor 2
+	int16Conv(motor2.Encoder_value, aByte);
+	UART2_TxBuffer[4] = aByte[1];		// MSB
+	UART2_TxBuffer[5] = aByte[0];		// LSB
+	// Motor 3
+	int16Conv(motor3.Encoder_value, aByte);
+	UART2_TxBuffer[6] = aByte[1];		// MSB
+	UART2_TxBuffer[7] = aByte[0];		// LSB
+	// Motor 4
+	int16Conv(motor4.Encoder_value, aByte);
+	UART2_TxBuffer[8] = aByte[1];		// MSB
+	UART2_TxBuffer[9] = aByte[0];		// LSB
+	
+	UART2_TxBuffer[10] = '_';
+	UART2_TxBuffer[11] = ']';
+	HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
+}
+
+void int16Conv(int16_t val_16, uint8_t* aByte)
+{
+    aByte[0] = (uint8_t)(val_16);				//LSB
+    aByte[1] = (uint8_t)(val_16 >> 8);	//MSB
+}
+

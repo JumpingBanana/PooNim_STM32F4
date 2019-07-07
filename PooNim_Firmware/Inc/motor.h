@@ -38,4 +38,8 @@ void MotorSet_Setpoint(MOTOR_HandlerTypeDef *motor, signed int setPoint);
 void MotorSet_speed(MOTOR_HandlerTypeDef *motor, float PWM);
 void MotorControl_PID(MOTOR_HandlerTypeDef *motor);
 void MotorControl_GetDeadBand(MOTOR_HandlerTypeDef *motor, float set_speed_cw, float set_speed_ccw);
+void reportEncoder(void);
+void int16Conv(int16_t val_16, uint8_t* aByte);
+
+
 #endif /* __MOTOR_H */
