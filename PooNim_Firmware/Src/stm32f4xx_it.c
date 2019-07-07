@@ -41,8 +41,8 @@
 #include "gpio.h"		// For buttons
 #include "common.h"	// For Global variables
 
-extern uint8_t UART2_TxBuffer[8];
-extern uint8_t UART2_RxBuffer[8];
+extern uint8_t UART2_TxBuffer[12];
+extern uint8_t UART2_RxBuffer[10];
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

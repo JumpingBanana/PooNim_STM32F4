@@ -40,12 +40,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 #include "gpio.h"
+#include "common.h"
 
 /* USER CODE BEGIN 0 */
 #include "motor.h"	//for motor
 
 uint8_t UART2_TxBuffer[12];		
-uint8_t UART2_RxBuffer[8];		
+uint8_t UART2_RxBuffer[10];		
 CMD_HandlerTypeDef UART2_CMD;
 /* USER CODE END 0 */
 
@@ -212,8 +213,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 //@brief  Rx Transfer completed callbacks.
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {	
+	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
+	
 	UART2_CMD = SerialReceiveCMD();
 
+/*
 	uint8_t aByte[2];
 	
 	//Transmit data back?
@@ -239,7 +243,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	UART2_TxBuffer[10] = 0x0D;
 	UART2_TxBuffer[11] = 0x5D;	// ']'
 	//Send out data
-	HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
+	//HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
+	*/
 }
 
 //@brief  Tx Transfer completed callbacks.
@@ -254,10 +259,10 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 	CMD_HandlerTypeDef recv_cmd;
 	
 	//Check Head and Tail
-	if(UART2_RxBuffer[0] == 0x5B && UART2_RxBuffer[7] == 0x5D){
+	if(UART2_RxBuffer[0] == 0x5B && UART2_RxBuffer[9] == 0x5D){
 		//Head and Tail
 		recv_cmd.head = UART2_RxBuffer[0];
-		recv_cmd.tail = UART2_RxBuffer[7];
+		recv_cmd.tail = UART2_RxBuffer[9];
 		//Command ID
 		recv_cmd.cmd_id = UART2_RxBuffer[1];
 		//Data package
@@ -266,8 +271,26 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 		recv_cmd.data[2] = UART2_RxBuffer[4];
 		recv_cmd.data[3] = UART2_RxBuffer[5];
 		recv_cmd.data[4] = UART2_RxBuffer[6];
+		recv_cmd.data[5] = UART2_RxBuffer[7];
+		recv_cmd.data[6] = UART2_RxBuffer[8];
 	}else{
 		printf("Frame error!\n");
+		printf("%i | %i |%i |%i |%i |%i |%i |%i |%i |%i |\n", recv_cmd.head, recv_cmd.cmd_id,
+			recv_cmd.data[0], recv_cmd.data[1], recv_cmd.data[2], recv_cmd.data[3],
+			recv_cmd.data[4], recv_cmd.data[5], recv_cmd.data[6], recv_cmd.tail);
+
+		UART2_TxBuffer[0] = UART2_RxBuffer[0];
+		UART2_TxBuffer[1] = UART2_RxBuffer[1];
+		UART2_TxBuffer[2] = UART2_RxBuffer[2];
+		UART2_TxBuffer[3] = UART2_RxBuffer[3];
+		UART2_TxBuffer[4] = UART2_RxBuffer[4];
+		UART2_TxBuffer[5] = UART2_RxBuffer[5];
+		UART2_TxBuffer[6] = UART2_RxBuffer[6];
+		UART2_TxBuffer[7] = UART2_RxBuffer[7];
+		UART2_TxBuffer[8] = UART2_RxBuffer[8];
+		UART2_TxBuffer[9] = UART2_RxBuffer[9];
+		HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
+		
 	}
 	
 	return recv_cmd;
@@ -278,6 +301,7 @@ CMD_HandlerTypeDef GetSerialCMD(void)
 {
 	return UART2_CMD;
 }
+
 
 void int16Conv(int16_t val_16, uint8_t *aByte)
 {

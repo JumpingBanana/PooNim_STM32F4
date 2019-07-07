@@ -16,5 +16,5 @@ typedef struct {
 
 extern PooNim_HandlerTypeDef PooNim_CMD;
 
-void Robot_CalWheelSpeed(PooNim_HandlerTypeDef *PooNim_CMD, float *WheelSpeed);
+void Robot_CalWheelSpeed(PooNim_HandlerTypeDef *PooNim_CMD, signed int *WheelSpeed);
 #endif /* __ROBOT_H */

@@ -64,6 +64,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_NVIC_Init(void);
+int16_t Convert_2U8_INT16(uint8_t byte_0, uint8_t byte_1);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -71,9 +72,11 @@ static void MX_NVIC_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-//  GLobal variables
+// Global variables
 uint32_t volatile g_sysTicks_50ms = 0;		// Externed in common.h
 uint32_t volatile g_sysTicks_100ms = 0;	// Externed in common.h
+CMD_HandlerTypeDef COMM_test;						// Only for Communication test
+
 // Local variables
 uint32_t sysTick_50ms = 0;
 uint32_t sysTick_100ms = 0;
@@ -89,8 +92,8 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */	
 	//Receive dummy data via UART2
-	uint8_t initialRxBuffer[8];
-  //CMD_HandlerTypeDef UART2_CMD;
+	uint8_t initialRxBuffer[10];
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -156,7 +159,7 @@ int main(void)
 		{
 			// 20 Hz call
 			//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);	//Set PooNim's on-board Red LED, PD14 High
+			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);	//Set PooNim's on-board Red LED, PD14 High
 			
 			// Update encoder reading
 			MotorUpdate_Encoder();
@@ -166,7 +169,7 @@ int main(void)
 			MotorControl_PID(&motor3);
 			MotorControl_PID(&motor4);
 			
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);	//Set PooNim's on-board Red LED, PD14 Low
+			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);	//Set PooNim's on-board Red LED, PD14 Low
 			
 			sysTick_50ms = ticks_50ms;
 		}
@@ -349,6 +352,9 @@ static void MX_NVIC_Init(void)
 
 uint8_t systemSM_Update(uint8_t systemState)
 {
+		// For case 5
+		signed int ENC_speed[4];
+	
 		switch(systemState){
 			case(0):
 				// case 0
@@ -410,13 +416,13 @@ uint8_t systemSM_Update(uint8_t systemState)
 				MotorSet_Setpoint(&motor3, 50);
 				MotorSet_Setpoint(&motor4, 50);
 			
-				//MotorSet_speed(&motor1, 0.2);
-				//MotorSet_speed(&motor2, 0.2);
-				//MotorSet_speed(&motor3, 0.2);
-				//MotorSet_speed(&motor4, 0.2);
+				//MotorSet_speed(&motor1, -1.0);
+				//MotorSet_speed(&motor2, -1.0);
+				//MotorSet_speed(&motor3, -1.0);
+				//MotorSet_speed(&motor4, -1.0);
 						
 				printf("Encoder : %i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
-				printf("Error : %f\t%f\t%f\t%f\n", motor1.Error, motor2.Error, motor3.Error, motor4.Error);
+				//printf("Error : %f\t%f\t%f\t%f\n", motor1.Error, motor2.Error, motor3.Error, motor4.Error);
 			break;
 			
 			case(3):
@@ -425,8 +431,25 @@ uint8_t systemSM_Update(uint8_t systemState)
 				printf("Transmit USART at 10Hz\n");
 				uint8_t test_TxBuffer[12];
 				test_TxBuffer[0] = 0x5B;	// '['
+				test_TxBuffer[1] = 0x5F;	// '_'
+				test_TxBuffer[2] = 0x5F;	// '_'
+				test_TxBuffer[3] = 0x5F;	// '_'
+				test_TxBuffer[4] = 0x5F;	// '_'
+				test_TxBuffer[5] = 0x5F;	// '_'
+				test_TxBuffer[6] = 0x5F;	// '_'
+				test_TxBuffer[7] = 0x5F;	// '_'
+				test_TxBuffer[8] = 0x5F;	// '_'
+				test_TxBuffer[9] = 0x5F;	// '_'
+				test_TxBuffer[10] = 0x5F;	// '_'
 				test_TxBuffer[11] = 0x5D;	// ']'
 				HAL_UART_Transmit_IT(&huart2, (uint8_t *)test_TxBuffer, sizeof(test_TxBuffer));
+			
+				COMM_test = GetSerialCMD();
+				//printf("%i -- %i\n", UART2_CMD_test.cmd_id, (int16_t)((UART2_CMD_test.data[0]) << 8) | ((int16_t)(UART2_CMD_test.data[1])));
+				printf("%i -- %i -- %i -- %i\n", COMM_test.cmd_id, 
+																					Convert_2U8_INT16(COMM_test.data[0],COMM_test.data[1]),
+																					Convert_2U8_INT16(COMM_test.data[2],COMM_test.data[3]),
+																					Convert_2U8_INT16(COMM_test.data[4],COMM_test.data[5]));
 			
 			break;
 			
@@ -440,7 +463,21 @@ uint8_t systemSM_Update(uint8_t systemState)
 			case(5):
 			// case 5 -- Serial Control
 				printf("Case 5\n");
-				
+				COMM_test = GetSerialCMD();
+				// The raw value from serial port would be in range of [-1000 to 1000]. We devide
+				// the value by 1000.0 to get float value in range of [-1.000 to 1.000]
+				PooNim_CMD.vel_x = Convert_2U8_INT16(COMM_test.data[0],COMM_test.data[1])/1000.0f;
+				PooNim_CMD.vel_y = Convert_2U8_INT16(COMM_test.data[2],COMM_test.data[3])/1000.0f;
+				PooNim_CMD.rot_w = Convert_2U8_INT16(COMM_test.data[4],COMM_test.data[5])/1000.0f;
+				//printf("Vel X: %.3f : Vel Y: %.3f : Rot Z: %.3f\n", PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w);
+			
+				// Calculate required wheel speed, in Encoder count unit, and use as a set point for PID
+				Robot_CalWheelSpeed(&PooNim_CMD,  ENC_speed);	// ENC_speed will be in float unit
+				MotorSet_Setpoint(&motor1, ENC_speed[0]);
+				MotorSet_Setpoint(&motor2, ENC_speed[1]);
+				MotorSet_Setpoint(&motor3, ENC_speed[2]);
+				MotorSet_Setpoint(&motor4, ENC_speed[3]);
+				//printf("%i : %i : %i : %i\n", ENC_speed[0], ENC_speed[1], ENC_speed[2], ENC_speed[3]);
 			
 			break;
 			
@@ -595,6 +632,11 @@ int fputc(int ch, FILE *f)
 	return(ITM_SendChar(ch));
 }
 /* USER CODE END 4 */
+// convert 2 uint8_t into a single int16_t
+// To use when receive a data from Serial
+int16_t Convert_2U8_INT16(uint8_t byte_0, uint8_t byte_1){
+	return (int16_t)(byte_1 << 8) | ((int16_t)(byte_0));
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

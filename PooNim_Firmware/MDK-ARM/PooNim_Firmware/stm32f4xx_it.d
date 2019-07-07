@@ -39,3 +39,5 @@ poonim_firmware\stm32f4xx_it.o: ../Inc/tim.h
 poonim_firmware\stm32f4xx_it.o: ../Inc/gpio.h
 poonim_firmware\stm32f4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 poonim_firmware\stm32f4xx_it.o: ../Inc/common.h
+poonim_firmware\stm32f4xx_it.o: ../Inc/usart.h
+poonim_firmware\stm32f4xx_it.o: ../Inc/common.h
