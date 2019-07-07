@@ -47,7 +47,6 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
 #include "motor.h"
 #include "robot.h"
 #include "common.h"
@@ -64,7 +63,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_NVIC_Init(void);
-int16_t Convert_2U8_INT16(uint8_t byte_0, uint8_t byte_1);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -74,8 +72,7 @@ int16_t Convert_2U8_INT16(uint8_t byte_0, uint8_t byte_1);
 /* USER CODE BEGIN 0 */
 // Global variables
 uint32_t volatile g_sysTicks_50ms = 0;		// Externed in common.h
-uint32_t volatile g_sysTicks_100ms = 0;	// Externed in common.h
-CMD_HandlerTypeDef COMM_test;						// Only for Communication test
+uint32_t volatile g_sysTicks_100ms = 0;		// Externed in common.h
 
 // Local variables
 uint32_t sysTick_50ms = 0;
@@ -91,8 +88,7 @@ uint32_t sysTick_100ms = 0;
 int main(void)
 {
   /* USER CODE BEGIN 1 */	
-	//Receive dummy data via UART2
-	uint8_t initialRxBuffer[10];
+	
   
   /* USER CODE END 1 */
 
@@ -126,15 +122,16 @@ int main(void)
   MX_TIM12_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
-
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 	printf("PooNim Firmware\n");
 	
 	//Start UART2 receive in non-blocking mode
-	HAL_UART_Receive_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer)); 	//Dummy receive data to get thing started
-	HAL_UART_Transmit_IT(&huart2, (uint8_t *)initialRxBuffer, sizeof(initialRxBuffer));	//Dummy receive data to get thing started
+	//Receive dummy data via UART2
+	HAL_UART_Receive_IT(&huart2, (uint8_t *)UART2_RxBuffer, sizeof(UART2_RxBuffer)); 	//Dummy receive data to get thing started
+	HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_RxBuffer, sizeof(UART2_TxBuffer));	//Dummy receive data to get thing started
+	
 	//Start Timer5 interrupt
 	HAL_TIM_Base_Start_IT(&htim5);	//20Hz interrupt
 
@@ -158,9 +155,6 @@ int main(void)
 		if(sysTick_50ms != ticks_50ms)
 		{
 			// 20 Hz call
-			//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
-			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);	//Set PooNim's on-board Red LED, PD14 High
-			
 			// Update encoder reading
 			MotorUpdate_Encoder();
 			// Motor control-loop
@@ -168,9 +162,7 @@ int main(void)
 			MotorControl_PID(&motor2);
 			MotorControl_PID(&motor3);
 			MotorControl_PID(&motor4);
-			
-			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);	//Set PooNim's on-board Red LED, PD14 Low
-			
+
 			sysTick_50ms = ticks_50ms;
 		}
 		
@@ -182,87 +174,13 @@ int main(void)
 
 			sysTick_100ms = ticks_100ms;
 		}
-		
-		/*
-		//Process UART2 message
-		UART2_CMD = GetSerialCMD();
-		switch(UART2_CMD.cmd_id) {
-			case 0x31:
-				//Set PooNim speed
-				//received cmd as (vel_x,vel_y,rot_w)
-				//convert received uint8_t to float -> (float)(((int8_t)(UART2_CMD.data[0])*1.0f)/INT8_MAX)
-				PooNim_CMD.vel_x = (float)(((int8_t)(UART2_CMD.data[0])*1.0f)/INT8_MAX);
-				PooNim_CMD.vel_y = (float)(((int8_t)(UART2_CMD.data[1])*1.0f)/INT8_MAX);
-				PooNim_CMD.rot_w = (float)(((int8_t)(UART2_CMD.data[2])*1.0f)/INT8_MAX);
-			
-				float wheel_speed[4];
-				Robot_CalWheelSpeed(&PooNim_CMD, wheel_speed);
-			
-				//printf("speed cmd:: (%.3f, %.3f, %.3f) | Wheel speed:: (%.3f, %.3f, %.3f, %.3f)\n", 
-				//	PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w, wheel_speed[0], wheel_speed[1], wheel_speed[2], wheel_speed[3]);
-			
-				MotorSet_speed(&motor1, wheel_speed[0]);
-				MotorSet_speed(&motor2, wheel_speed[1]);
-				MotorSet_speed(&motor3, wheel_speed[2]);
-				MotorSet_speed(&motor4, wheel_speed[3]);
-				
-				printf("%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
-				break;
-			
-			case 0x32:
-				//Do something
-				break;
-			
-			default:
-				//What to do? Print out message for now.
-				printf("Unknown command ID, recieved: %x\n", UART2_CMD.cmd_id);
-		}
-		
-		//Process Button state
-		//Green
-		if(button_G.ButtonState)
-		{
-			//Do something
-			//button_G.PressedCount = 0;		//clear count
-			//button_G.ButtonState = false;	//clear state
-		}
-		
-		//Blue
-		if(button_B.ButtonState)
-		{
-			//Do something
-			//button_B.PressedCount = 0;		//clear count
-			//button_B.ButtonState = false;	//clear state
-		}
-		
-		//Red
-		if(button_R.ButtonState)
-		{
-			//Do something
-			//button_R.PressedCount = 0;		//clear count
-			//button_R.ButtonState = false;	//clear state
-		}
-		
-		//Orange
-		if(button_O.ButtonState)
-		{
-			//Run system check function
-			SystemCheck();
-			button_O.PressedCount = 0;		//clear count
-			button_O.ButtonState = false;	//clear state
-		}
-		
-		//printf("Encoder:\t%i\t%i\t%i\t%i\n", motor1.Encoder_value, motor2.Encoder_value, motor3.Encoder_value, motor4.Encoder_value);
-		HAL_Delay(20);
-		*/
-		
+
 	}	//  While=loop
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -352,7 +270,11 @@ static void MX_NVIC_Init(void)
 
 uint8_t systemSM_Update(uint8_t systemState)
 {
-		// For case 5
+		// For Case 3 -- Communication test
+		CMD_HandlerTypeDef COMM_test;	
+
+		// For Case 5
+		CMD_HandlerTypeDef Serial_Control;
 		signed int ENC_speed[4];
 	
 		switch(systemState){
@@ -450,25 +372,23 @@ uint8_t systemSM_Update(uint8_t systemState)
 																					Convert_2U8_INT16(COMM_test.data[0],COMM_test.data[1]),
 																					Convert_2U8_INT16(COMM_test.data[2],COMM_test.data[3]),
 																					Convert_2U8_INT16(COMM_test.data[4],COMM_test.data[5]));
-			
 			break;
 			
 			case(4):
 				// case 4 - Sensors Test
-				printf("Case 4\n");
-				
+				printf("Case 4\n");	
 			
 			break;
 			
 			case(5):
 			// case 5 -- Serial Control
 				printf("Case 5\n");
-				COMM_test = GetSerialCMD();
+				Serial_Control = GetSerialCMD();
 				// The raw value from serial port would be in range of [-1000 to 1000]. We devide
 				// the value by 1000.0 to get float value in range of [-1.000 to 1.000]
-				PooNim_CMD.vel_x = Convert_2U8_INT16(COMM_test.data[0],COMM_test.data[1])/1000.0f;
-				PooNim_CMD.vel_y = Convert_2U8_INT16(COMM_test.data[2],COMM_test.data[3])/1000.0f;
-				PooNim_CMD.rot_w = Convert_2U8_INT16(COMM_test.data[4],COMM_test.data[5])/1000.0f;
+				PooNim_CMD.vel_x = Convert_2U8_INT16(Serial_Control.data[0],Serial_Control.data[1])/1000.0f;
+				PooNim_CMD.vel_y = Convert_2U8_INT16(Serial_Control.data[2],Serial_Control.data[3])/1000.0f;
+				PooNim_CMD.rot_w = Convert_2U8_INT16(Serial_Control.data[4],Serial_Control.data[5])/1000.0f;
 				//printf("Vel X: %.3f : Vel Y: %.3f : Rot Z: %.3f\n", PooNim_CMD.vel_x, PooNim_CMD.vel_y, PooNim_CMD.rot_w);
 			
 				// Calculate required wheel speed, in Encoder count unit, and use as a set point for PID
@@ -632,10 +552,14 @@ int fputc(int ch, FILE *f)
 	return(ITM_SendChar(ch));
 }
 /* USER CODE END 4 */
-// convert 2 uint8_t into a single int16_t
-// To use when receive a data from Serial
-int16_t Convert_2U8_INT16(uint8_t byte_0, uint8_t byte_1){
-	return (int16_t)(byte_1 << 8) | ((int16_t)(byte_0));
+/* ----------------------------------------------------------- */
+//		Function: Convert_2U8_INT16
+//		Description:	convert 2 uint8_t into a single int16_t.
+//									To use when receive a data from Serial.
+//		Example:	LSB = 0xAA, MSB = 0xBB --> Output = 0xBBAA
+/* ----------------------------------------------------------- */
+int16_t Convert_2U8_INT16(uint8_t LSB, uint8_t MSB){
+	return (int16_t)(MSB << 8) | ((int16_t)(LSB));
 }
 
 /**

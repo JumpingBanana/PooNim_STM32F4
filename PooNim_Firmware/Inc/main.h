@@ -181,6 +181,8 @@
 
 /* USER CODE BEGIN Private defines */
 uint8_t systemSM_Update(uint8_t systemState);
+int16_t Convert_2U8_INT16(uint8_t byte_0, uint8_t byte_1);
+
 void InitMotors(void);
 void InitButtons(void);
 void SystemCheck(void);

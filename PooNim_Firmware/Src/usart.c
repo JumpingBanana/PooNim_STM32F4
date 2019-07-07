@@ -40,19 +40,19 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 #include "gpio.h"
-#include "common.h"
 
 /* USER CODE BEGIN 0 */
 #include "motor.h"	//for motor
+#include "common.h"
 
-uint8_t UART2_TxBuffer[12];		
-uint8_t UART2_RxBuffer[10];		
-CMD_HandlerTypeDef UART2_CMD;
+uint8_t UART2_TxBuffer[12];			// Externed in common.h
+uint8_t UART2_RxBuffer[10];			// Externed in common.h
+
+CMD_HandlerTypeDef UART2_CMD_;	// Kept this as local variable
 /* USER CODE END 0 */
 
-UART_HandleTypeDef huart2;		// Externed in common.h
-UART_HandleTypeDef huart3;		// Externed in common.h
-
+UART_HandleTypeDef huart2;			// Externed in common.h
+UART_HandleTypeDef huart3;			// Externed in common.h
 /* USART2 init function */
 
 void MX_USART2_UART_Init(void)
@@ -213,38 +213,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 //@brief  Rx Transfer completed callbacks.
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {	
-	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	//Toggle PooNim's on-board Red LED, PD14
-	
-	UART2_CMD = SerialReceiveCMD();
-
-/*
-	uint8_t aByte[2];
-	
-	//Transmit data back?
-	UART2_TxBuffer[0] = 0x5B;	// '['
-	UART2_TxBuffer[1] = 0x61;	// 'a'
-	//Send Encoder count back
-	int16Conv(motor1.Encoder_value, aByte);
-	UART2_TxBuffer[2] = aByte[0];
-	UART2_TxBuffer[3] = aByte[1];
-	
-	int16Conv(motor2.Encoder_value, aByte);
-	UART2_TxBuffer[4] = aByte[0];
-	UART2_TxBuffer[5] = aByte[1];
-	
-	int16Conv(motor3.Encoder_value, aByte);
-	UART2_TxBuffer[6] = aByte[0];
-	UART2_TxBuffer[7] = aByte[1];
-	
-	int16Conv(motor4.Encoder_value, aByte);
-	UART2_TxBuffer[8] = aByte[0];
-	UART2_TxBuffer[9] = aByte[1];
-	
-	UART2_TxBuffer[10] = 0x0D;
-	UART2_TxBuffer[11] = 0x5D;	// ']'
-	//Send out data
-	//HAL_UART_Transmit_IT(&huart2, (uint8_t *)UART2_TxBuffer, sizeof(UART2_TxBuffer));
-	*/
+	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);	// Toggle PooNim's on-board Red LED, PD14
+	UART2_CMD_ = SerialReceiveCMD();
 }
 
 //@brief  Tx Transfer completed callbacks.
@@ -299,7 +269,7 @@ CMD_HandlerTypeDef SerialReceiveCMD(void)
 
 CMD_HandlerTypeDef GetSerialCMD(void)
 {
-	return UART2_CMD;
+	return UART2_CMD_;
 }
 
 

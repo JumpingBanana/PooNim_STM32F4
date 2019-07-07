@@ -9,7 +9,7 @@
 #define SIN45					0.7071f	//Value of Sin(45) = 0.7071
 #define COS45					0.7071f	//Value of Cos(45) = 0.7071
 
-PooNim_HandlerTypeDef PooNim_CMD;
+PooNim_HandlerTypeDef PooNim_CMD;		// Externed in robot.h
 
 void Robot_CalWheelSpeed(PooNim_HandlerTypeDef *PooNim_CMD, signed int *WheelSpeed_ENC)
 {
